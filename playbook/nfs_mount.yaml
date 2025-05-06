@@ -1,0 +1,59 @@
+---
+- name: Установка и настройка NFS-клиента
+  hosts: all
+  become: yes  # Требуются права root
+  vars:
+    nfs_server: "192.168.1.100"          # IP или hostname NFS-сервера
+    nfs_share: "/data"                    # Экспортируемая директория на сервере
+    mount_point: "/mnt/nfs_share"         # Локальная точка монтирования
+    nfs_options: "rw,sync,hard,intr"      # Опции монтирования
+    nfs_version: "nfs4"                   # Версия NFS (nfs3/nfs4)
+
+  tasks:
+    # Создание точки монтирования
+    - name: Создать директорию для монтирования
+      file:
+        path: "{{ mount_point }}"
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    # Временное монтирование для проверки
+    - name: Проверить монтирование NFS
+      command: mount -t {{ nfs_version }} {{ nfs_server }}:{{ nfs_share }} {{ mount_point }} -o {{ nfs_options }}
+      register: mount_result
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Размонтировать после проверки
+      command: umount {{ mount_point }}
+      when: mount_result.rc == 0
+      ignore_errors: yes
+
+    # Добавление в fstab
+    - name: Добавить запись в fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ nfs_server }}:{{ nfs_share }}  {{ mount_point }}  {{ nfs_version }}  {{ nfs_options }}  0  0"
+        regexp: "^{{ nfs_server }}:{{ nfs_share }}"
+        state: present
+        insertafter: EOF
+
+    # Монтирование по fstab
+    - name: Монтировать все файловые системы из fstab
+      mount:
+        path: "{{ mount_point }}"
+        src: "{{ nfs_server }}:{{ nfs_share }}"
+        fstype: "{{ nfs_version }}"
+        opts: "{{ nfs_options }}"
+        state: mounted
+
+    # Проверка
+    - name: Проверить успешность монтирования
+      command: df -h
+      register: df_output
+
+    - name: Показать результат
+      debug:
+        var: df_output.stdout_lines

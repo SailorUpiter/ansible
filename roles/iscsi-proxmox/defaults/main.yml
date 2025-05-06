@@ -1,0 +1,11 @@
+---
+# defaults file for iscsi-proxmox
+portals:
+ ch4-a:
+   portal_ip: 10.20.16.10
+ ch4-b:
+   portal_ip: 10.20.16.11
+ ch5-a:
+   portal_ip: 10.20.16.12
+ ch5-b:
+   portal_ip: 10.20.16.13

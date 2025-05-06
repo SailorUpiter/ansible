@@ -1,0 +1,6 @@
+---
+ - name: Add iscsi disks on proxmox server
+   hosts: proxmox[0:1]
+   become: true
+   roles:
+     - role: iscsi-proxmox

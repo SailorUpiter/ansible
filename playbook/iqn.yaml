@@ -1,0 +1,28 @@
+---
+- name: iqn in file
+  hosts: proxmox
+  gather_facts: false
+  vars:
+    remote_file: "/etc/iscsi/initiatorname.iscsi"  # путь к файлу на удалённой машине
+    local_file: "/home/ubadmin/ansible/tmp/iqn_file"     # путь для сохранения на control node
+
+  tasks:
+    - name: Проверить существование файла на удалённой машине
+      stat:
+        path: "{{ remote_file }}"
+      register: remote_file_stat
+    
+
+    - name: Получить содержимое файла
+      slurp:
+        src: "{{ remote_file }}"
+      register: remote_file_content
+      when: remote_file_stat.stat.exists
+
+    - name: Сохранить содержимое в локальный файл
+      delegate_to: localhost
+      lineinfile:
+        path: "{{ local_file }}"
+        line: "{{ remote_file_content.content | b64decode }}"
+      when: remote_file_stat.stat.exists
+
