@@ -1,0 +1,8 @@
+---
+- name: Install Haproxy
+  hosts: master
+  become: true
+  vars_files:
+    - /home/ubadmin/ansible/vars/kuber/vars
+  roles:
+    - proxy
