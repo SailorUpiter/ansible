@@ -9,12 +9,14 @@
   ansible.builtin.apt_repository:
     repo: 'ppa:vbernat/haproxy-3.0'
 
-- name: Install 
+- name: Install packages Haproxy and Keepalived
   apt:
-    name: haproxy
+    name: 
+      - haproxy
+      - keepalived
     update_cache: yes
 
-- name: Copy haproxy haproxy.cfg
+- name: Copy haproxy haproxy.cfg to master
   ansible.builtin.template:
     src: haproxy.j2
     dest: /etc/haproxy/haproxy.cfg
@@ -22,3 +24,9 @@
   register: haproxy_conf
   notify: Restart haproxy
 
+- name: Copy keepalived.conf to master
+  ansible.builtin.template:
+    src: keepalived.j2
+    dest: /etc/keepalived/keepalived.conf
+    mode: '0600'
+  notify: Restart keepalived
