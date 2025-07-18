@@ -1,0 +1,18 @@
+---
+- name: Install utility to raid P440ar
+  hosts: hp
+  gather_facts: false
+  tasks:
+  - name: Creates directory
+    ansible.builtin.file:
+      path: /home/test
+      state: directory
+
+  - name: Dowload packages
+    ansible.builtin.get_url:
+      url: https://downloads.linux.hpe.com/sdr/repo/mcp/pool/non-free/ssacli-6.45-8.0_amd64.deb
+      dest: /home/test
+
+  - name: Install utility
+    ansible.builtin.apt:
+      deb: /home/test/ssacli-6.45-8.0_amd64.deb

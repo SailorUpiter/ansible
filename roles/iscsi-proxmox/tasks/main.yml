@@ -1,0 +1,9 @@
+---
+# tasks file for iscsi-proxmox
+ - name: Discover ISCSI portal
+   community.general.open_iscsi:
+      show_nodes: true
+      discover: true
+      ip: "{{ item.value.portal_ip }}"
+      login: true
+   loop: "{{ lookup('dict', portals) }}"

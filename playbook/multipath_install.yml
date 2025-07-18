@@ -1,0 +1,9 @@
+---
+ - name: Install multipath tools
+   hosts: proxmox
+   gather_facts: false
+   tasks:
+   - name: install multipath tools
+     ansible.builtin.apt:
+       name: multipath-tools
+       state: present

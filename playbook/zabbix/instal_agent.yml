@@ -1,0 +1,11 @@
+---
+- name: Install zabbix
+  hosts: log_srv
+  become: true
+  roles:
+    - role: community.zabbix.zabbix_agent
+      enable_version_check: false
+      zabbix_agent_server: 10.20.15.42
+
+      zabbix_agent_version: 7.2
+      zabbix_agent_ip: 10.20.15.42

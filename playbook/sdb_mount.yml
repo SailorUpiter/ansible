@@ -1,0 +1,24 @@
+---
+- name: Parted, create fs and mount disk
+  hosts: log_srv
+  become: true
+  tasks:
+  - name: Create a new ext4 primary partition
+    community.general.parted:
+      device: /dev/sdb
+      label: gpt
+      number: 1
+      state: present
+      fs_type: ext4
+
+  - name: Creates directory
+    ansible.builtin.file:
+      path: /mnt/data
+      state: directory
+
+  - name: Mount disk
+    ansible.posix.mount:
+      path: /mnt/data
+      src: /dev/sdb1
+      fstype: ext4
+      state: mounted

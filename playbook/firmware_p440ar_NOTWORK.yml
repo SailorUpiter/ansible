@@ -1,0 +1,28 @@
+---
+#- name: Install utility to raid P440ar
+#  hosts: hp
+#  gather_facts: false
+#  tasks:
+#  - name: create directory to firmaware
+    ansible.builtin.file:
+      path: /home/firmware
+      state: directory
+  
+  - name: Copy file on server
+    ansible.builtin.copy:
+      src: /home/ubadmin/ansible/files/firmware-smartarray-ea3138d8e8-7.20-1.1.x86_64.rpm
+      dest: /home/firmware/firmware-smartarray-ea3138d8e8-7.20-1.1.x86_64.rpm
+  
+  - name: Install rpm2cpio
+    ansible.builtin.apt:
+      name: rpm2cpio
+      state: present
+
+  - name: unpack rpm pack
+    ansible.builtin.shell:
+      cmd: rpm2cpio /home/firmware/firmware-smartarray-ea3138d8e8-7.20-1.1.x86_64.rpm | cpio -id
+      chdir: /home/firmware
+
+  - name: run setup script
+    ansible.builtin.shell:
+      cmd: /home/firmware/usr/lib/x86_64-linux-gnu/firmware-smartarray-ea3138d8e8-7.20-1.1/setup > /home/firmware/log1.log

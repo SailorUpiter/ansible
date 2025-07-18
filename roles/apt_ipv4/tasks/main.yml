@@ -1,0 +1,10 @@
+---
+# tasks file for apt_ipv4
+- name: Add a line to a file if the file does not exist, without passing regexp
+  ansible.builtin.lineinfile:
+    path: /etc/apt/apt.conf.d/99force-ipv4
+    line: Acquire::ForceIPv4 "true";
+    create: yes
+    owner: root
+    group: root
+    mode: '0600'

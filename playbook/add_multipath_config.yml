@@ -1,0 +1,28 @@
+---
+- name: add multipath config
+  hosts: proxmox[0:1]
+  tasks:
+  - name: Run a shell command and register its output as a variable
+    ansible.builtin.shell: /lib/udev/scsi_id -g -u -d /dev/sdb
+    register: wwid_result
+    ignore_errors: true
+
+  - name: Show stdout content
+    debug:
+      var: wwid_result
+
+  - name: Template a file to /etc/multipath.conf
+    ansible.builtin.template:
+      src: /home/ubadmin/ansible/templates/mulipath.conf.j2
+      dest: /etc/multipath.conf
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Add multipath disks
+    ansible.builtin.shell: multipath -a "{{ wwid_result.stdout }}"
+
+  - name: Restart multipath-tools
+    ansible.builtin.service:
+      name: multipath-tools
+      state: restarted

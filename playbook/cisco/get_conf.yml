@@ -1,0 +1,15 @@
+---
+ - name: Fetch IOS Device Configurations
+   hosts: ios_devices
+   gather_facts: no
+   tasks:
+   - name: Gather running configuration
+     ios_command:
+      commands:
+       - show running-config
+     register: running_config
+
+   - name: Save configuration to file
+     copy:
+      content: “{{ running_config.stdout[0] }}”
+      dest: “/home/ubadmin/ansible/tmp/{{ inventory_hostname }}_config.txt”
