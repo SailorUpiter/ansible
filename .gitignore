@@ -1,2 +1,4 @@
 /home/ubadmin/ansible/ansible.cfg
 /home/ubadmin/ansible/inventory.ini
+/home/ubadmin/ansible/inventory
+/home/ubadmin/ansible/vars
